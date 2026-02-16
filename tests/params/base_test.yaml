@@ -1,0 +1,37 @@
+# テスト用: 読み取り条件を簡略化（utf-8, read_csv なし）
+project:
+  env: "auto"
+  paths:
+    local:
+      root: "."
+      data_dir: "./data"
+      params_dir: "./params"
+      output_dir: "./output"
+    colab:
+      root: "/content"
+      data_dir: "/content/data"
+      params_dir: "/content/params"
+      output_dir: "/content/output"
+
+io:
+  encoding: "utf-8"
+  read_csv: {}
+  discover: "*.csv"
+
+plot_style:
+  figure:
+    aspect:
+      mode: "width_height"
+      width_in: 6.0
+      height_in: 4.0
+    dpi: 100
+    constrained_layout: true
+  fonts:
+    family: "DejaVu Sans"
+    title: 12
+    axis_label: 10
+    tick_label: 9
+    legend: 9
+  save:
+    format: "png"
+    transparent: false
