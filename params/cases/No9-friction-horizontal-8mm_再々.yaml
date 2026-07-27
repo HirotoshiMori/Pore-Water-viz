@@ -1,0 +1,5 @@
+# No9 friction-horizontal-8mm (re-run) ? channel mapping
+io:
+  channel_mapping:
+    pore:   { P1: 7, P2: 8, P3: 9, P4: 10 }
+    laser:  { L1: 2, L2: 3 }   # HA-V01, HA-V02 (V03/V04 are disconnected ~5.43V)

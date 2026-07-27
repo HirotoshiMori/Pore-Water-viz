@@ -13,6 +13,8 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import pandas as pd
 
+from .fonts import apply_font_config
+
 
 def save_timeseries_chart(
     df: pd.DataFrame,
@@ -43,7 +45,7 @@ def save_timeseries_chart(
     dpi = fig_cfg.get("dpi", 150)
     constrained = fig_cfg.get("constrained_layout", True)
     fonts = style.get("fonts", {})
-    family = fonts.get("family", "DejaVu Sans")
+    family = apply_font_config(fonts)
     title_pt = fonts.get("title", 14)
     axis_pt = fonts.get("axis_label", 12)
     tick_pt = fonts.get("tick_label", 10)
@@ -124,7 +126,7 @@ def save_line_chart(
     dpi = fig_cfg.get("dpi", 150)
     constrained = fig_cfg.get("constrained_layout", True)
     fonts = style.get("fonts", {})
-    family = fonts.get("family", "DejaVu Sans")
+    family = apply_font_config(fonts)
     title_pt = fonts.get("title", 14)
     axis_pt = fonts.get("axis_label", 12)
     tick_pt = fonts.get("tick_label", 10)
