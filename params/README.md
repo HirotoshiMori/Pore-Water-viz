@@ -20,8 +20,9 @@
 
 ## よく触る項目（base.yaml）
 
-- **io.baseline_seconds** … 「実験の開始」を記録開始から何秒後にするか（例：60）。ドリフト補正の t' もこの値に連動。
-- **io.filters.pore** … 間隙水圧のノイズ除去（median_window など）。ドリフトは `process.py` の定数で固定（linear@S1）。
+- **io.baseline_seconds** … 「実験の開始」を記録開始から何秒後にするか（例：60）。
+- **io.pore_drift_* ** … 間隙水圧のドリフト補正の区間。
+- **io.filters.pore** … 間隙水圧のノイズ除去（median_window など）。
 - **io.hydraulic_gradient_lengths** … 動水勾配計算用の測定点間距離（装置に合わせて変更）。
 - **plot_style.time_from_start_seconds** … グラフの横軸の 0 秒をいつにするか。
 - **plot_style.figure** … 図のサイズや dpi（解像度）。

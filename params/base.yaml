@@ -70,8 +70,13 @@ io:
   # true にすると「60秒の値＝50mm」で揃います。false だと従来どおり（合わせない）。
   pore_rebaseline_50mm_after_filter: true
 
-  # 間隙水圧のドリフト補正は process.py で固定（linear@S1: t'=120–480 s）。
-  # pore_drift_* を YAML に書いても無視されます。変更する場合はコードの定数を編集してください。
+  # 間隙水圧のドリフト補正
+  # 【意味】センサーの経時ドリフト（時間とともに少しずつずれること）を打ち消します。
+  # "linear_baseline" = 指定区間の直線トレンドをドリフトとみなして差し引く。false で補正なし。
+  pore_drift_correction: "linear_baseline"
+  # 【意味】ドリフトを推定する区間。「この区間は値が一定」とみなして傾きだけを推定します。
+  pore_drift_baseline_start: 0   # 記録開始からこの秒数から
+  pore_drift_baseline_seconds: 660  # この長さ（秒）の区間で傾きを推定
 
   # 間隙水圧のみ: 下向き DIP 除去（Hampel 風・下側だけ）
   # 【意味】計測のたびにたまに現れる「下向きのトゲ（DIP）」だけを補正します。デフォルトは OFF。

@@ -9,28 +9,6 @@ import pandas as pd
 
 from . import filters as flt
 
-# linear@S1 drift correction (fixed; not overridden by YAML).
-# t' = seconds from record start - baseline_seconds; fit on S1, apply to all t'.
-DRIFT_S1_T_REL_START = 120.0
-DRIFT_S1_T_REL_END = 480.0
-DRIFT_RESTORE_M = 0.05  # 50 mm water head
-
-
-def apply_linear_s1_drift(pore_m: pd.DataFrame, baseline_n: int) -> pd.DataFrame:
-    """Remove a+bt fitted on S1 [120,480] s (t') and restore S1 mean to 50 mm."""
-    t_sec = (pore_m.index - pore_m.index[0]).total_seconds().values.astype(float)
-    t_rel = t_sec - float(baseline_n)
-    mask_b = (t_rel >= DRIFT_S1_T_REL_START) & (t_rel <= DRIFT_S1_T_REL_END)
-    out = pore_m.copy()
-    for col in out.columns:
-        t_b = t_rel[mask_b]
-        y_b = out[col].values[mask_b] + DRIFT_RESTORE_M
-        valid = np.isfinite(y_b)
-        if np.sum(valid) >= 2:
-            slope, intercept = np.polyfit(t_b[valid], y_b[valid], 1)
-            out[col] = out[col].values - (intercept + slope * t_rel) + DRIFT_RESTORE_M
-    return out
-
 
 def prepare_pore_laser(
     df: pd.DataFrame,
@@ -87,8 +65,20 @@ def prepare_pore_laser(
     pore_m.columns = [f"P{i+1}" for i in range(len(pore_cols))]
     pore_m = pore_m.loc[pore_m.index.notna()]
 
-    # Drift: always linear@S1 (constants at module top; YAML pore_drift_* is ignored)
-    pore_m = apply_linear_s1_drift(pore_m, baseline_n)
+    # ドリフト補正: 指定区間で真値は一定とみなし、その区間の線形トレンドをドリフトとして除去
+    if io_cfg.get("pore_drift_correction") == "linear_baseline":
+        t_sec = (pore_m.index - pore_m.index[0]).total_seconds().values.astype(float)
+        drift_start = float(io_cfg.get("pore_drift_baseline_start", 0))
+        drift_seconds = float(io_cfg.get("pore_drift_baseline_seconds", 60))
+        drift_end = drift_start + drift_seconds
+        mask_b = (t_sec >= drift_start) & (t_sec < drift_end)
+        for col in pore_m.columns:
+            t_b = t_sec[mask_b]
+            y_b = pore_m[col].values[mask_b]
+            valid = np.isfinite(y_b)
+            if np.sum(valid) >= 2:
+                (slope, _) = np.polyfit(t_b[valid], y_b[valid], 1)
+                pore_m[col] = pore_m[col].values - slope * t_sec
 
     # 間隙水圧のみ: 下向き DIP 除去（Hampel 風・下側のみ）。ケース/チャンネル毎に ON（デフォルト OFF）。
     pore_dip_cfg = io_cfg.get("pore_dip_removal")
