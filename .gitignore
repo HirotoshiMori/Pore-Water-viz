@@ -27,6 +27,8 @@ htmlcov/
 
 # Jupyter
 .ipynb_checkpoints/
+# Colab 更新用。Drive 側に置く。GitHub には上げない。
+notebooks/prepare_colab.ipynb
 
 # IDE / OS
 .idea/
