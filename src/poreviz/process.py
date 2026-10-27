@@ -10,6 +10,20 @@ import pandas as pd
 from . import filters as flt
 
 
+def _require_columns(df: pd.DataFrame, indices: list[int], label: str) -> None:
+    """列番号が CSV の範囲外なら、IndexError ではなくどの列が足りないかを示す。"""
+    n_cols = int(df.shape[1])
+    missing = [i for i in indices if i < 0 or i >= n_cols]
+    if not missing:
+        return
+    last = n_cols - 1
+    raise ValueError(
+        f"{label}の列番号 {missing} は、読み込んだCSVの列数 {n_cols}"
+        f"（0〜{last}）の範囲外です。"
+        " channel_mapping または columns を、このファイルの列に合わせてください。"
+    )
+
+
 def prepare_pore_laser(
     df: pd.DataFrame,
     config: dict[str, Any],
@@ -42,6 +56,14 @@ def prepare_pore_laser(
         laser_count = int(io_cfg.get("laser_count", 2))
         laser_cols = laser_list[:laser_count]
     baseline_n = int(io_cfg.get("baseline_seconds", 60))  # 計測開始からこの秒後（1 sample/s 想定）の1点を基準値に使用
+
+    if len(df) == 0:
+        raise ValueError(
+            "CSVからデータ行を読めませんでした。ヘッダ行数とフッタ行数（skiprows / skipfooter）を確認してください。"
+        )
+    _require_columns(df, [dt_col], "日時")
+    _require_columns(df, list(pore_cols), "間隙水圧")
+    _require_columns(df, list(laser_cols), "レーザー")
 
     # 日時: 0列目をパース
     try:
