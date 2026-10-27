@@ -1,7 +1,8 @@
-# 追跡しないディレクトリ（data/docs は含めない）
-data/
+# clone 先の直下に残す。GitHub からの更新では消さない。templates/yaml は対象外。
+/data/
+/yaml/
+/output/
 docs/
-output/
 
 # Python
 .venv/

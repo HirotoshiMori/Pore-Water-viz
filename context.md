@@ -2,11 +2,11 @@
 
 ## Key points
 - Notebookは**1セルのみ**に制限し、実行状態は**メッセージ（print/log）で確認可能**にする
-- 実行環境は **Local / Google Colab を自動判定**し、`params/ data/ src/ output/` の基準パスを切り替える
+- 実行環境は **Local / Google Colab を自動判定**し、clone 先の `yaml/ data/ output/` を使う。GitHub 更新ではこの3つを消さない
 - **Localは venv 前提**も明記（Python3.12固定、再現性担保）
 - データは `data/` に **ケース毎=CSVファイル名**で保存（拡張子除く=case_id）
 - CLIは **case指定あり→1件 / 指定なし→data/全CSVを一括図化**
-- 図の **縦横比・解像度・フォント（title/axis/legend別）** は `params/base.yaml` で調整（ケースyamlで上書き可）
+- 図の **縦横比・解像度・フォント（title/axis/legend別）** は `yaml/base.yaml` で調整（ケースyamlで上書き可）
 - 出力は**ファイル保存のみ**、`output/{case_id}/...` にケース別整理
 
 ---
@@ -69,8 +69,8 @@ output/
 
 ## 4. Configuration (YAML)
 ### 4.0 Config layering
-- `params/base.yaml`（共通：入出力・環境・図化スタイル）
-- `params/cases/{case_id}.yaml`（ケース固有：列/距離/補正/閾値等）
+- `yaml/base.yaml`（共通：入出力・環境・図化スタイル。無ければ `templates/yaml` から作る）
+- `yaml/{case_id}.yaml` または `yaml/cases/{case_id}.yaml`（ケース固有）
 - マージ順：**base → case（caseが上書き）**
 
 ### 4.1 base.yaml（必須）

@@ -29,6 +29,7 @@ def test_get_paths_local_uses_cwd(mock_env_local: str) -> None:
     from poreviz import env
     paths = env.get_paths("local")
     assert paths["data_dir"] == (Path.cwd() / "data").resolve()
+    assert paths["params_dir"] == (Path.cwd() / "yaml").resolve()
     assert paths["output_dir"] == (Path.cwd() / "output").resolve()
 
 

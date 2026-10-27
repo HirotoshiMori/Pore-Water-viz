@@ -76,8 +76,9 @@ def run_case(
         base_config, paths = config.load_base(base_path, cases_dir_override)
         env.print_startup(paths)
 
-    cases_dir = paths.get("cases_dir") or (paths["params_dir"] / "cases")
-    case_yaml_path = cases_dir / f"{case_id}.yaml"
+    case_yaml_path = config.resolve_case_yaml(
+        paths["params_dir"], case_id, paths.get("cases_dir")
+    )
     case_dir = paths["output_dir"] / case_id
     figures_dir = case_dir / "figures"
     logs_dir = case_dir / "logs"
@@ -205,7 +206,7 @@ def run_all(
     pattern = glob_pattern or (base_config.get("io") or {}).get("discover", "*.csv")
     case_ids = discover_cases(paths["data_dir"], pattern)
     data_dir = paths["data_dir"]
-    cases_dir = paths.get("cases_dir") or (paths["params_dir"] / "cases")
+    cases_dir = paths.get("cases_dir") or paths["params_dir"]
 
     if not case_ids:
         raise FileNotFoundError(
@@ -217,7 +218,7 @@ def run_all(
         for cid in case_ids:
             csv_p = data_dir / f"{cid}.csv"
             out_d = paths["output_dir"] / cid
-            case_yml = cases_dir / f"{cid}.yaml"
+            case_yml = config.resolve_case_yaml(paths["params_dir"], cid, cases_dir)
             print(f"[dry-run] case_id={cid} | 入力={csv_p} | 出力={out_d} | case.yaml={'あり' if case_yml.exists() else 'なし'}")
         return case_ids
 

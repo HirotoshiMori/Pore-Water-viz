@@ -2,7 +2,7 @@
 # base.yaml — 全ケース共通の設定ファイル
 # =============================================================================
 # このファイルは「データの読み方」「計算の基準」「グラフの見た目」を決めます。
-# 個別の実験だけ変えたいときは params/cases/{ケース名}.yaml で上書きできます。
+# 個別の実験だけ変えたいときは yaml/{ケース名}.yaml で上書きできます。
 #
 # ■ 学生向け：このファイルの見方
 #   - 「#」で始まる行はコメント（説明）です。プログラムはここを読みません。
@@ -22,12 +22,12 @@ project:
     local:       # PCで実行するとき
       root: "."
       data_dir: "./data"      # CSV を置くフォルダ（ここに計測CSVを入れる）
-      params_dir: "./params"  # このYAMLが入っているフォルダ
-      output_dir: "./output"  # グラフ・ログの出力先（ここに図が保存される）
-    colab:       # Google Colab で実行するとき（Drive の作業フォルダを使う場合は root をそのパスに）
-      root: "/content/drive/MyDrive/Colab Notebooks/sinkhole_analysis"
+      params_dir: "./yaml"    # 設定フォルダ（clone 先に残す。GitHub 更新では消さない）
+      output_dir: "./output"  # グラフ・ログの出力先（clone 先に残す）
+    colab:       # Google Colab。root は clone した Pore-Water-viz フォルダ（ノートが POREVIZ_WORK で指定）
+      root: "."
       data_dir: "./data"
-      params_dir: "./params"
+      params_dir: "./yaml"
       output_dir: "./output"
 
 # -----------------------------------------------------------------------------
@@ -81,7 +81,7 @@ io:
 
   # 間隙水圧のみ: 下向き DIP 除去（Hampel 風・下側だけ）
   # 【意味】計測のたびにたまに現れる「下向きのトゲ（DIP）」だけを補正します。デフォルトは OFF。
-  # 有効にするときはケースごとに params/cases/{ケース名}.yaml で指定します。
+  # 有効にするときはケースごとに yaml/{ケース名}.yaml で指定します。
   # 全チャンネル一括: pore_dip_removal: { window: 11, k: 2 }
   # チャンネル別:     pore_dip_removal: { P1: { window: 11, k: 2 }, P3: { window: 7, k: 2.5 } }
   pore_dip_removal: null

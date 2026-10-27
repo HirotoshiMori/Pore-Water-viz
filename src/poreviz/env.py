@@ -28,7 +28,7 @@ def get_paths(env: str | None = None) -> dict[str, Path]:
     環境に応じたデフォルトパスを返す（絶対パス）。
     config.load_base 内で base.yaml の project.paths で上書きする。
     環境変数 POREVIZ_WORK が設定されているときは、そのパスを「作業フォルダ」の root とする
-    （ノート・モジュールがあるフォルダと data/params/output を別にしたいときに使う）。
+    （ノート・モジュールがあるフォルダと data/yaml/output を別にしたいときに使う）。
     """
     import os
     work = os.environ.get("POREVIZ_WORK")
@@ -40,7 +40,7 @@ def get_paths(env: str | None = None) -> dict[str, Path]:
     return {
         "root": root,
         "data_dir": (root / "data").resolve(),
-        "params_dir": (root / "params").resolve(),
+        "params_dir": (root / "yaml").resolve(),
         "output_dir": (root / "output").resolve(),
     }
 
@@ -49,4 +49,5 @@ def print_startup(paths: dict[str, Path]) -> None:
     """起動時に ROOT / DATA / OUTPUT を print する。ENV は get_environment() で既に出力済み。"""
     print(f"[env] ROOT: {paths['root']}")
     print(f"[env] DATA: {paths['data_dir']}")
+    print(f"[env] YAML: {paths['params_dir']}")
     print(f"[env] OUTPUT: {paths['output_dir']}")

@@ -3,6 +3,7 @@ base.yaml / case.yaml の読み込み、deep-merge、検証、config_used 保存
 Phase 3: validate_base / validate_case 強化、cases_dir 対応。
 """
 
+import shutil
 from pathlib import Path
 from typing import Any
 
@@ -89,6 +90,45 @@ def validate_case(case: dict[str, Any]) -> None:
             raise ValueError(f"case.yaml の {key} は dict または list である必要があります: {type(val)}")
 
 
+def template_yaml_dir() -> Path:
+    """リポジトリ内の初期設定。clone 先の yaml/ が無いときだけコピーする。"""
+    return Path(__file__).resolve().parents[2] / "templates" / "yaml"
+
+
+def ensure_yaml_dir(root: Path) -> None:
+    """
+    root/yaml/base.yaml が無いとき、templates/yaml から足りないファイルだけコピーする。
+    既にある yaml・data・output は上書きしない。
+    """
+    root = Path(root)
+    dest = root / "yaml"
+    if (dest / "base.yaml").is_file():
+        return
+    src = template_yaml_dir()
+    if not src.is_dir():
+        return
+    for path in src.rglob("*"):
+        if not path.is_file():
+            continue
+        target = dest / path.relative_to(src)
+        if target.exists():
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(path, target)
+
+
+def resolve_case_yaml(
+    yaml_dir: Path, case_id: str, cases_dir: Path | None = None
+) -> Path:
+    """ケース設定。yaml/{case}.yaml を優先し、無ければ cases フォルダを探す。"""
+    yaml_dir = Path(yaml_dir)
+    flat = yaml_dir / f"{case_id}.yaml"
+    nested = (Path(cases_dir) if cases_dir is not None else yaml_dir / "cases") / f"{case_id}.yaml"
+    if flat.is_file():
+        return flat
+    return nested
+
+
 def load_base(
     base_path: str | Path | None = None,
     cases_dir: str | Path | None = None,
@@ -102,6 +142,7 @@ def load_base(
     default_paths = env.get_paths(env_type)
 
     if base_path is None:
+        ensure_yaml_dir(default_paths["root"])
         base_path = default_paths["params_dir"] / "base.yaml"
     else:
         base_path = Path(base_path)

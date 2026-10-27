@@ -112,7 +112,7 @@ def validate(
         typer.echo(f"base.yaml: {base_resolved} OK")
         for cid in case_ids:
             csv_p = paths["data_dir"] / f"{cid}.csv"
-            case_yml = cases_d / f"{cid}.yaml"
+            case_yml = config.resolve_case_yaml(paths["params_dir"], cid, cases_d)
             if not csv_p.exists():
                 typer.echo(f"  {cid}: 入力CSV なし {csv_p}", err=True)
                 raise typer.Exit(3)
@@ -138,7 +138,7 @@ def doctor() -> None:
     typer.echo(f"ENV: {env_type}")
     typer.echo(f"ROOT: {paths['root']}")
     typer.echo(f"DATA: {paths['data_dir']}")
-    typer.echo(f"PARAMS: {paths['params_dir']}")
+    typer.echo(f"YAML: {paths['params_dir']}")
     typer.echo(f"OUTPUT: {paths['output_dir']}")
     try:
         import pandas as pd
